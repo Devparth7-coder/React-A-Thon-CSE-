@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareCircle | Peer-to-Peer Item Rentals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #64748b;
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Custom checkbox */
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .custom-checkbox:checked {
+            background-color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+
+        .dark .custom-checkbox {
+            border-color: #475569;
+        }
+
+        /* Star rating */
+        .star-rating {
+            direction: rtl;
+            unicode-bidi: bidi-override;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            color: #cbd5e1;
+            font-size: 24px;
+            padding: 0 2px;
+            cursor: pointer;
+        }
+
+        .star-rating input:checked~label,
+        .star-rating label:hover,
+        .star-rating label:hover~label {
+            color: #fbbf24;
+        }
+
+        /* Calendar */
+        .calendar-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover:not(.disabled) {
+            background-color: #e0f2fe;
+        }
+
+        .calendar-day.selected {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+        .calendar-day.disabled {
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .dark .calendar-day:hover:not(.disabled) {
+            background-color: #1e3a8a;
+        }
+
+        .navsearch {
+            display: flex;
+            background-color: pink;
+            width: 560px;
+            height: 30px;
+            border-radius: 4px;
+            justify-content: space-evenly;
+        }
+
+        .searchselect {
+            background-color: #f3f3f3;
+            width: 50px;
+            color: #0f1111;
+            text-align: center;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            border: none;
+        }
+
+        .searchinput {
+            width: 100%;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .searchicon {
+            width: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            background-color: rgb(56, 133, 228);
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            color: #0f1111;
+        }
+
+        .navsearch:hover {
+            border: 2px solid orange;
+        }
+
+        /* Chatbot styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #0ea5e9;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            border: none;
+        }
+
+        .chatbot-toggle i {
+            font-size: 24px;
+        }
+
+        .chatbot-window {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            height: 500px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .chatbot-header {
+            background-color: #0ea5e9;
+            color: white;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background-color: #f9fafb;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .user-message {
+            background-color: #0ea5e9;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background-color: white;
+            color: #1f2937;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chatbot-input {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid #e5e7eb;
+            background-color: white;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chatbot-input button {
+            background-color: #0ea5e9;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .dark .chatbot-window {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+
+        .dark .chatbot-messages {
+            background-color: #0f172a;
+        }
+
+        .dark .bot-message {
+            background-color: #334155;
+            color: #f8fafc;
+        }
+
+        .dark .chatbot-input {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+
+        .dark .chatbot-input input {
+            background-color: #334155;
+            border-color: #475569;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#" class="flex items-center">
+                        <i class="fas fa-recycle text-primary-600 dark:text-primary-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800 dark:text-white">ShareCircle</span>
+                    </a>
+                    <div class="hidden md:ml-10 md:flex md:space-x-8">
+                        <a href="#"
+                            class="text-primary-600 dark:text-primary-400 border-b-2 border-primary-500 px-1 pt-1 text-sm font-medium">Home</a>
+                        <a href="#explore"
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 px-1 pt-1 text-sm font-medium">Explore</a>
+                        <a href="#how-it-works"
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 px-1 pt-1 text-sm font-medium">How
+                            it works</a>
+                        <a href="#categories"
+                            class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 px-1 pt-1 text-sm font-medium">Categories</a>
+                        <div class="navsearch">
+                            <select class="searchselect">
+                                <option>All</option>
+                                <option>Tools</option>
+                                <option value="">Books</option>
+                                <option value="">Electronics</option>
+                                <option value="">Cameras</option>
+                                <option value="">Sports</option>
+                                <option>Clothing</option>
+                            </select>
+                            <input placeholder="Search Items" class="searchinput">
+                            <div class="searchicon"><i class="fa-solid fa-magnifying-glass"></i></div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                    <!-- Logged out state -->
+                    <div id="logged-out-view" class="flex items-center space-x-4">
+                        <button onclick="openModal('login-modal')"
+                            class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium">Log
+                            In</button>
+                        <button onclick="openModal('signup-modal')"
+                            class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">Sign
+                            Up</button>
+                    </div>
+                    <!-- Logged in state -->
+                    <div id="logged-in-view" class="hidden items-center space-x-4">
+                        <span id="user-greeting" class="text-sm font-medium"></span>
+                        <button id="logout-button"
+                            class="bg-secondary-600 hover:bg-secondary-700 text-white px-4 py-2 rounded-md text-sm font-medium">Log
+                            Out</button>
+                    </div>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button id="mobile-menu-button"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-primary-600 dark:text-primary-400">Home</a>
+                <a href="#explore"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100">Explore</a>
+                <a href="#how-it-works"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100">How
+                    it works</a>
+                <a href="#categories"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100">Categories</a>
+                <div class="flex items-center justify-between px-3 py-2">
+                    <span class="text-gray-600 dark:text-gray-300">Dark Mode</span>
+                    <button id="mobile-theme-toggle"
+                        class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600">
+                        <span class="sr-only">Toggle theme</span>
+                        <span
+                            class="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-300 translate-x-1 dark:translate-x-6 transition"></span>
+                    </button>
+                </div>
+                <div id="mobile-logged-out-view">
+                    <button onclick="openModal('login-modal')"
+                        class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100">Log
+                        In</button>
+                    <button onclick="openModal('signup-modal')"
+                        class="w-full mt-1 text-left px-3 py-2 rounded-md text-base font-medium bg-primary-600 text-white">Sign
+                        Up</button>
+                </div>
+                <div id="mobile-logged-in-view" class="hidden">
+                    <span id="mobile-user-greeting"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300"></span>
+                    <button id="mobile-logout-button"
+                        class="w-full mt-1 text-left px-3 py-2 rounded-md text-base font-medium bg-secondary-600 text-white">Log
+                        Out</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+                <div class="mb-8 lg:mb-0">
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Rent Anything, From Anyone</h1>
+                    <p class="text-xl mb-8">ShareCircle connects you with items you need from people in your community.
+                        Save money and reduce waste by sharing resources.</p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button onclick="openModal('signup-modal')"
+                            class="bg-white text-primary-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-bold text-lg">Get
+                            Started</button>
+                        <a href="#explore"
+                            class="bg-transparent border-2 border-white hover:bg-white hover:text-primary-600 px-6 py-3 rounded-lg font-bold text-lg text-center">Explore
+                            Items</a>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
+                        <div class="bg-white rounded-xl overflow-hidden shadow-lg">
+                            <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                                alt="Camera rental" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="font-bold text-gray-800 text-lg">Professional DSLR Camera</h3>
+                                        <p class="text-gray-600 text-sm">New Delhi,India</p>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                        <span class="font-bold text-gray-800">4.8</span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex justify-between items-center">
+                                    <span class="text-primary-600 font-bold">₹25/day</span>
+                                    <button
+                                        class="bg-primary-600 hover:bg-primary-700 text-white px-3 py-1 rounded-md text-sm">Rent
+                                        Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob">
+                    </div>
+                    <div
+                        class="absolute -top-6 -right-6 w-32 h-32 bg-primary-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="p-6 bg-white dark:bg-gray-700 rounded-lg shadow">
+                    <div class="text-3xl font-bold text-primary-600 dark:text-primary-400">10,000+</div>
+                    <div class="text-gray-600 dark:text-gray-300 mt-2">Items Available</div>
+                </div>
+                <div class="p-6 bg-white dark:bg-gray-700 rounded-lg shadow">
+                    <div class="text-3xl font-bold text-primary-600 dark:text-primary-400">5,000+</div>
+                    <div class="text-gray-600 dark:text-gray-300 mt-2">Happy Renters</div>
+                </div>
+                <div class="p-6 bg-white dark:bg-gray-700 rounded-lg shadow">
+                    <div class="text-3xl font-bold text-primary-600 dark:text-primary-400">200+</div>
+                    <div class="text-gray-600 dark:text-gray-300 mt-2">Cities</div>
+                </div>
+                <div class="p-6 bg-white dark:bg-gray-700 rounded-lg shadow">
+                    <div class="text-3xl font-bold text-primary-600 dark:text-primary-400">4.8★</div>
+                    <div class="text-gray-600 dark:text-gray-300 mt-2">Average Rating</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">How ShareCircle Works</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-20 h-20 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <i class="fas fa-search text-primary-600 dark:text-primary-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">1. Find What You Need</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Browse thousands of items available for rent in your
+                        local community.</p>
+                </div>
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-20 h-20 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-primary-600 dark:text-primary-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">2. Book & Pay</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Select your dates and securely pay through our platform.
+                    </p>
+                </div>
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div
+                        class="w-20 h-20 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <i class="fas fa-smile text-primary-600 dark:text-primary-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">3. Enjoy & Return</h3>
+                    <p class="text-gray-600 dark:text-gray-300">Pick up the item, use it, and return it when done. It's
+                        that simple!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="py-16 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Popular Categories</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <a href="#"
+                    class="category-card bg-white dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center hover:shadow-md transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="fas fa-camera text-primary-600 dark:text-primary-400 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-center">Cameras</span>
+                </a>
+                <a href="#"
+                    class="category-card bg-white dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center hover:shadow-md transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="fas fa-tools text-primary-600 dark:text-primary-400 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-center">Tools</span>
+                </a>
+                <a href="#"
+                    class="category-card bg-white dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center hover:shadow-md transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="fas fa-bicycle text-primary-600 dark:text-primary-400 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-center">Sports</span>
+                </a>
+                <a href="#"
+                    class="category-card bg-white dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center hover:shadow-md transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="fas fa-laptop text-primary-600 dark:text-primary-400 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-center">Electronics</span>
+                </a>
+                <a href="#"
+                    class="category-card bg-white dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center hover:shadow-md transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="fas fa-tshirt text-primary-600 dark:text-primary-400 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-center">Clothing</span>
+                </a>
+                <a href="#"
+                    class="category-card bg-white dark:bg-gray-700 rounded-lg p-4 flex flex-col items-center hover:shadow-md transition-shadow">
+                    <div
+                        class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-2">
+                        <i class="fas fa-book text-primary-600 dark:text-primary-400 text-xl"></i>
+                    </div>
+                    <span class="font-medium text-center">Books</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Explore Section -->
+    <section id="explore" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Explore Items Near You</h2>
+                <button onclick="openModal('filter-modal')"
+                    class="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                    <i class="fas fa-sliders-h mr-2"></i> Filters
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Item Card 1 -->
+                <div
+                    class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80"
+                            alt="Camera" class="w-full h-48 object-cover">
+                        <div
+                            class="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 px-2 py-1 rounded-full text-xs font-semibold">
+                            ₹25/day</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">Canon EOS R5</h3>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Professional Mirrorless Camera</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-bold">4.9</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span>1.2 miles away</span>
+                        </div>
+                        <button onclick="openItemDetail('camera')"
+                            class="mt-4 w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg font-medium">View
+                            Details</button>
+                    </div>
+                </div>
+
+                <!-- Item Card 2 -->
+                <div
+                    class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="relative">
+                        <img src="https://media.istockphoto.com/id/1127290514/photo/electric-screwdriver-on-black-background.jpg?s=612x612&w=0&k=20&c=J6H7ymccZf1sm2IeSVlI41Ia8Xdg47DTk-F9r4k1q2I="
+                            alt="Drill" class="w-full h-48 object-cover">
+                        <div
+                            class="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 px-2 py-1 rounded-full text-xs font-semibold">
+                            ₹12/day</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">Power Drill Set</h3>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">Cordless with 20 Accessories</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-bold">4.7</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span>0.8 miles away</span>
+                        </div>
+                        <button onclick="openItemDetail('drill')"
+                            class="mt-4 w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg font-medium">View
+                            Details</button>
+                    </div>
+                </div>
+
+                <!-- Item Card 3 -->
+                <div
+                    class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80"
+                            alt="Bike" class="w-full h-48 object-cover">
+                        <div
+                            class="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 px-2 py-1 rounded-full text-xs font-semibold">
+                            ₹18/day</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">Mountain Bike</h3>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">27.5" Wheels, 21 Gears</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-bold">4.8</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span>2.1 miles away</span>
+                        </div>
+                        <button onclick="openItemDetail('bike')"
+                            class="mt-4 w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg font-medium">View
+                            Details</button>
+                    </div>
+                </div>
+
+                <!-- Item Card 4 -->
+                <div
+                    class="bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                            alt="Projector" class="w-full h-48 object-cover">
+                        <div
+                            class="absolute top-2 right-2 bg-white/90 dark:bg-gray-800/90 px-2 py-1 rounded-full text-xs font-semibold">
+                            ₹35/day</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-lg mb-1">HD Projector</h3>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm">1080p with 120" Screen</p>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-bold">4.9</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span>1.5 miles away</span>
+                        </div>
+                        <button onclick="openItemDetail('projector')"
+                            class="mt-4 w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg font-medium">View
+                            Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-10 text-center">
+                <button
+                    class="bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 px-6 py-3 rounded-lg font-medium">Load
+                    More Items</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">What Our Community Says</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/women/32.jpg"
+                                alt="User">
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">Sarah Johnson</p>
+                            <div class="flex">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">"I rented a camera for my vacation and it saved me
+                        hundreds of dollars. The owner was super helpful and even gave me some photography tips!"</p>
+                </div>
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="https://randomuser.me/api/portraits/men/45.jpg"
+                                alt="User">
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">Michael Chen</p>
+                            <div class="flex">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">"As a DIY enthusiast, ShareCircle has been a
+                        game-changer. I can rent specialized tools for projects without breaking the bank."</p>
+                </div>
+                <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-10 rounded-full" src="C:\Users\Lenovo\Downloads\Devansh.jpg" alt="User">
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">Devansh Kumar Yadav</p>
+                            <div class="flex">
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                                <i class="fas fa-star text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300">"I've listed several items on ShareCircle and it's
+                        amazing how much extra income I'm making from things that were just collecting dust!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-primary-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-6">Ready to Join the Sharing Economy?</h2>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">Whether you need something for a project or want to earn from
+                items you rarely use, ShareCircle makes it easy and secure.</p>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <button onclick="openModal('signup-modal')"
+                    class="bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-bold text-lg">Sign Up
+                    Now</button>
+                <button onclick="openModal('how-to-list-modal')"
+                    class="bg-transparent border-2 border-white hover:bg-white hover:text-primary-600 px-8 py-3 rounded-lg font-bold text-lg">Learn
+                    How to List</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-300 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">ShareCircle</h3>
+                    <ul class="space-y-2">
+                        <li><a href="aboutus.html" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Press</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Community</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Safety</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Trust & Verification</a></li>
+                        <li><a href="#" class="hover:text-white">Community Guidelines</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Hosting</h3>
+                    <ul class="space-y-2">
+                        <li><a href="add_item.html" class="hover:text-white">List Your Item</a></li>
+                        <li><a href="#" class="hover:text-white">Hosting Resources</a></li>
+                        <li><a href="#" class="hover:text-white">Insurance</a></li>
+                        <li><a href="#" class="hover:text-white">Host Community</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Connect</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <p class="text-sm">Subscribe to our newsletter</p>
+                    <div class="mt-2 flex">
+                        <input type="email" placeholder="Your email"
+                            class="px-3 py-2 bg-gray-700 text-white rounded-l focus:outline-none w-full">
+                        <button class="bg-primary-600 hover:bg-primary-700 px-4 py-2 rounded-r">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm">© 2025 ShareCircle. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-sm hover:text-white">Privacy Policy</a>
+                    <a href="#" class="text-sm hover:text-white">Terms of Service</a>
+                    <a href="#" class="text-sm hover:text-white">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900 dark:opacity-90"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+            <div
+                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Log In</h3>
+                        <button onclick="closeModal('login-modal')"
+                            class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mt-6">
+                        <form id="login-form">
+                            <div id="login-error"
+                                class="hidden mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 rounded-md">
+                            </div>
+                            <div class="mb-4">
+                                <label for="login-email"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                <input type="email" id="login-email"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                    value="testuser@example.com">
+                            </div>
+                            <div class="mb-4">
+                                <label for="login-password"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                                <input type="password" id="login-password"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                    value="password123">
+                            </div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <input id="remember-me" name="remember-me" type="checkbox"
+                                        class="custom-checkbox h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                    <label for="remember-me"
+                                        class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Remember me</label>
+                                </div>
+                                <div class="text-sm">
+                                    <a href="#"
+                                        class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">Forgot
+                                        your password?</a>
+                                </div>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium">Log
+                                In</button>
+                        </form>
+                        <div class="mt-4 text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Don't have an account?
+                                <a href="#" onclick="closeModal('login-modal'); openModal('signup-modal')"
+                                    class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">Sign
+                                    up</a>
+                            </p>
+                        </div>
+                        <div class="mt-6">
+                            <div class="relative">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Or
+                                        continue with</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 grid grid-cols-2 gap-3">
+                                <button type="button"
+                                    class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <i class="fab fa-google mr-2"></i> Google
+                                </button>
+                                <button type="button"
+                                    class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <i class="fab fa-facebook-f mr-2"></i> Facebook
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900 dark:opacity-90"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+            <div
+                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Create Account</h3>
+                        <button onclick="closeModal('signup-modal')"
+                            class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mt-6">
+                        <form id="signup-form">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label for="signup-firstname"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First
+                                        Name</label>
+                                    <input type="text" id="signup-firstname"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="signup-lastname"
+                                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last
+                                        Name</label>
+                                    <input type="text" id="signup-lastname"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label for="signup-email"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                <input type="email" id="signup-email"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                    required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="signup-password"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                                <input type="password" id="signup-password"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                    required>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Must be at least 8 characters
+                                </p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="signup-confirm-password"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm
+                                    Password</label>
+                                <input type="password" id="signup-confirm-password"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white"
+                                    required>
+                            </div>
+                            <div class="flex items-center mb-4">
+                                <input id="terms" name="terms" type="checkbox"
+                                    class="custom-checkbox h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <label for="terms" class="ml-2 block text-sm text-gray-700 dark:text-gray-300" required>
+                                    I agree to the <a href="#"
+                                        class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">Terms
+                                        of Service</a> and <a href="#"
+                                        class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">Privacy
+                                        Policy</a>
+                                </label>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium">Create
+                                Account</button>
+                        </form>
+                        <div class="mt-4 text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">
+                                Already have an account?
+                                <a href="#" onclick="closeModal('signup-modal'); openModal('login-modal')"
+                                    class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">Log
+                                    in</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All other modals from original HTML would go here -->
+
+    <!-- Item Detail Modal -->
+    <div id="item-detail-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900 dark:opacity-90"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+            <div
+                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Item Details</h3>
+                        <button onclick="closeModal('item-detail-modal')"
+                            class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left Column - Image Gallery -->
+                        <div>
+                            <div class="relative h-64 md:h-80 rounded-lg overflow-hidden mb-4">
+                                <img id="detail-main-image" src="" alt="Main item image"
+                                    class="w-full h-full object-cover">
+                            </div>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div
+                                    class="cursor-pointer border-2 border-transparent hover:border-primary-500 rounded">
+                                    <img src="" class="h-16 w-full object-cover" onclick="changeMainImage(this.src)">
+                                </div>
+                                <div
+                                    class="cursor-pointer border-2 border-transparent hover:border-primary-500 rounded">
+                                    <img src="" class="h-16 w-full object-cover" onclick="changeMainImage(this.src)">
+                                </div>
+                                <div
+                                    class="cursor-pointer border-2 border-transparent hover:border-primary-500 rounded">
+                                    <img src="" class="h-16 w-full object-cover" onclick="changeMainImage(this.src)">
+                                </div>
+                                <div
+                                    class="cursor-pointer border-2 border-transparent hover:border-primary-500 rounded">
+                                    <img src="" class="h-16 w-full object-cover" onclick="changeMainImage(this.src)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column - Details -->
+                        <div>
+                            <h2 id="detail-title" class="text-xl font-bold mb-2"></h2>
+                            <div class="flex items-center mb-4">
+                                <div class="flex items-center mr-4">
+                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                    <span id="detail-rating" class="font-bold mr-1"></span>
+                                    <span id="detail-review-count" class="text-gray-600 dark:text-gray-300 text-sm">(0
+                                        reviews)</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                    <span id="detail-location"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <span id="detail-price"
+                                    class="text-2xl font-bold text-primary-600 dark:text-primary-400"></span>
+                                <span class="text-gray-600 dark:text-gray-300"> / day</span>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-bold mb-2">Description</h3>
+                                <p id="detail-description" class="text-gray-600 dark:text-gray-300"></p>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="font-bold mb-2">Specifications</h3>
+                                <ul id="detail-specs"
+                                    class="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
+                                    <!-- Will be filled by JavaScript -->
+                                </ul>
+                            </div>
+
+                            <!-- Rental Form -->
+                            <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-bold mb-3">Select Rental Dates</h3>
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Start Date</label>
+                                        <input type="date" id="start-date"
+                                            class="w-full px-3 py-2 border rounded-md dark:bg-gray-600">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">End Date</label>
+                                        <input type="date" id="end-date"
+                                            class="w-full px-3 py-2 border rounded-md dark:bg-gray-600">
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="font-medium">Total:</span>
+                                    <span id="rental-total" class="text-xl font-bold">₹0</span>
+                                </div>
+                                <button id="rent-now-btn"
+                                    class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-bold">
+                                    Rent Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- AI Chatbot -->
+    <div class="chatbot-container">
+        <div id="chatbot-window" class="chatbot-window dark:bg-gray-800 dark:border-gray-700">
+            <div class="chatbot-header">
+                <h3>ShareCircle Assistant</h3>
+                <button id="chatbot-close" class="text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="message bot-message">
+                    Hello! I'm your ShareCircle assistant. How can I help you today? 😊
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input id="chatbot-input" type="text" placeholder="Type your question..."
+                    class="dark:bg-gray-700 dark:text-white">
+                <button id="chatbot-send"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <button id="chatbot-toggle" class="chatbot-toggle">
+        <i class="fas fa-comment-dots"></i>
+    </button>
+    <script>
+        // --- THEME TOGGLE ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        const sunIcon = document.querySelector('.fa-sun');
+        const moonIcon = document.querySelector('.fa-moon');
+
+        const toggleSwitch = mobileThemeToggle.querySelector('span:last-child');
+
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+
+        const toggleTheme = () => {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        };
+
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            applyTheme('dark');
+        } else {
+            applyTheme('light');
+        }
+
+        // --- MOBILE MENU ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // --- MODAL CONTROLS ---
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('fade-in');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // --- LOGIN/LOGOUT LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const logoutButton = document.getElementById('logout-button');
+            const mobileLogoutButton = document.getElementById('mobile-logout-button');
+
+            const loggedOutView = document.getElementById('logged-out-view');
+            const loggedInView = document.getElementById('logged-in-view');
+            const userGreeting = document.getElementById('user-greeting');
+
+            const mobileLoggedOutView = document.getElementById('mobile-logged-out-view');
+            const mobileLoggedInView = document.getElementById('mobile-logged-in-view');
+            const mobileUserGreeting = document.getElementById('mobile-user-greeting');
+
+            const loginError = document.getElementById('login-error');
+
+            // Function to update the UI based on login state
+            function updateUI(isLoggedIn, name = '') {
+                if (isLoggedIn) {
+                    // Desktop view
+                    loggedOutView.classList.add('hidden');
+                    loggedInView.classList.remove('hidden');
+                    loggedInView.classList.add('flex');
+                    userGreeting.textContent = `Hi, ${name}!`;
+
+                    // Mobile view
+                    mobileLoggedOutView.classList.add('hidden');
+                    mobileLoggedInView.classList.remove('hidden');
+                    mobileUserGreeting.textContent = `Hi, ${name}!`;
+
+                } else {
+                    // Desktop view
+                    loggedInView.classList.add('hidden');
+                    loggedOutView.classList.remove('hidden');
+                    loggedOutView.classList.add('flex');
+
+                    // Mobile view
+                    mobileLoggedInView.classList.add('hidden');
+                    mobileLoggedOutView.classList.remove('hidden');
+
+                    // Clear session storage
+                    sessionStorage.removeItem('loggedInUser');
+                }
+            }
+
+            // Check session storage on page load
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                updateUI(true, loggedInUser);
+            }
+
+            // Handle login form submission
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const firstName = document.getElementById('signup-firstname').value || 'Test';
+
+                // Basic validation
+                if (!email.trim() || !password.trim()) {
+                    loginError.textContent = 'Please enter both email and password.';
+                    loginError.classList.remove('hidden');
+                    return;
+                }
+
+                // --- MOCK LOGIN SUCCESS ---
+                console.log('Logging in with:', { email, password });
+
+                // On success:
+                loginError.classList.add('hidden');
+                sessionStorage.setItem('loggedInUser', firstName);
+                updateUI(true, firstName);
+                closeModal('login-modal');
+                loginForm.reset();
+
+                // Check for pending rental
+                const pendingRental = sessionStorage.getItem('pendingRental');
+                if (pendingRental) {
+                    const rental = JSON.parse(pendingRental);
+                    sessionStorage.removeItem('pendingRental');
+
+                    // Reopen the item detail modal with the stored details
+                    setTimeout(() => {
+                        // In a real app, you would reopen the specific item
+                        // For this demo, we'll just show an alert
+                        alert(`Welcome back! You were trying to rent ${rental.title} for ${rental.price}/day from ${rental.startDate} to ${rental.endDate}. Please proceed with the rental.`);
+                        // In a full implementation, you would reopen the item detail modal here
+                    }, 500);
+                }
+            });
+
+            // Handle logout
+            const handleLogout = () => {
+                updateUI(false);
+            };
+
+            logoutButton.addEventListener('click', handleLogout);
+            mobileLogoutButton.addEventListener('click', () => {
+                handleLogout();
+                mobileMenu.classList.add('hidden'); // Close mobile menu on logout
+            });
+
+            // Signup form submission (for demonstration)
+            const signupForm = document.getElementById('signup-form');
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const firstName = document.getElementById('signup-firstname').value;
+
+                // Mock signup success
+                sessionStorage.setItem('loggedInUser', firstName);
+                updateUI(true, firstName);
+
+                alert(`Account for ${firstName} created successfully! You are now logged in.`);
+                closeModal('signup-modal');
+
+                // Check for pending rental
+                const pendingRental = sessionStorage.getItem('pendingRental');
+                if (pendingRental) {
+                    const rental = JSON.parse(pendingRental);
+                    sessionStorage.removeItem('pendingRental');
+
+                    setTimeout(() => {
+                        alert(`Welcome! You were trying to rent ${rental.title} for ${rental.price}/day from ${rental.startDate} to ${rental.endDate}. Please proceed with the rental.`);
+                    }, 500);
+                }
+            });
+        });
+
+
+        // Item details data (in a real app, this would come from a database)
+        const itemDetails = {
+            "camera": {
+                title: "Canon EOS R5",
+                subtitle: "Professional Mirrorless Camera",
+                description: "The Canon EOS R5 is a full-frame mirrorless camera that combines high-resolution stills with 8K video recording. Perfect for professional photographers and videographers. Includes 45MP full-frame sensor, 8K 30p video, in-body image stabilization, and dual pixel CMOS AF.",
+                price: 25,
+                rating: 4.9,
+                reviewCount: 42,
+                location: "1.2 miles away",
+                images: [
+                    "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
+                    "https://images.unsplash.com/photo-1607462109225-6b64ae2dd3cb",
+                    "https://images.unsplash.com/photo-1564466809058-bf4114d55352",
+                    "https://images.unsplash.com/photo-1510127037240-cd512c4ca98b"
+                ],
+                specs: [
+                    { name: "Brand", value: "Canon" },
+                    { name: "Model", value: "EOS R5" },
+                    { name: "Sensor", value: "45MP Full Frame" },
+                    { name: "Video", value: "8K 30p" },
+                    { name: "ISO Range", value: "100-51200" },
+                    { name: "Stabilization", value: "In-body 5-axis" },
+                    { name: "Autofocus", value: "Dual Pixel CMOS" },
+                    { name: "Condition", value: "Like New" }
+                ]
+            },
+            "drill": {
+                title: "Power Drill Set",
+                subtitle: "Cordless with 20 Accessories",
+                description: "Powerful cordless drill with lithium-ion battery, variable speed control, and 20-piece accessory set. Perfect for DIY projects, home repairs, and professional use. Includes drill bits, screwdriver bits, and carrying case.",
+                price: 12,
+                rating: 4.7,
+                reviewCount: 28,
+                location: "0.8 miles away",
+                images: [
+                    "https://images.unsplash.com/photo-1581093450021-33a9d5c9de08?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    "https://images.unsplash.com/photo-1581094271901-8022df4466f9",
+                    "https://images.unsplash.com/photo-1581094794329-c8112a89af12",
+                    "https://images.unsplash.com/photo-1581094794324-8a6db12c3c1a"
+                ],
+                specs: [
+                    { name: "Brand", value: "DeWalt" },
+                    { name: "Voltage", value: "20V" },
+                    { name: "Battery", value: "Li-ion (included)" },
+                    { name: "Chuck Size", value: "1/2 inch" },
+                    { name: "Speed", value: "0-1,500 RPM" },
+                    { name: "Torque", value: "300 in-lbs" },
+                    { name: "Accessories", value: "20 pieces" },
+                    { name: "Condition", value: "Excellent" }
+                ]
+            },
+            // Add more items as needed
+            "bike": {
+                title: "Mountain Bike",
+                subtitle: "27.5\" Wheels, 21 Gears",
+                description: "High-quality mountain bike with aluminum frame, front suspension, and 21-speed Shimano gears. Perfect for trail riding and outdoor adventures. Includes water bottle holder and bike lock.",
+                price: 18,
+                rating: 4.8,
+                reviewCount: 35,
+                location: "2.1 miles away",
+                images: [
+                    "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
+                    "https://images.unsplash.com/photo-1485965120184-e220f721d03e",
+                    "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8",
+                    "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7"
+                ],
+                specs: [
+                    { name: "Brand", value: "Trek" },
+                    { name: "Model", value: "Marlin 5" },
+                    { name: "Frame", value: "Aluminum" },
+                    { name: "Wheel Size", value: "27.5 inches" },
+                    { name: "Gears", value: "21-speed" },
+                    { name: "Suspension", value: "Front" },
+                    { name: "Brakes", value: "Hydraulic disc" },
+                    { name: "Condition", value: "Very Good" }
+                ]
+            },
+            "projector": {
+                title: "HD Projector",
+                subtitle: "1080p with 120\" Screen",
+                description: "High-definition projector with 1080p resolution, 3500 lumens brightness, and included 120\" portable screen. Perfect for movie nights, presentations, and gaming. Includes HDMI cable and carrying case.",
+                price: 35,
+                rating: 4.9,
+                reviewCount: 19,
+                location: "1.5 miles away",
+                images: [
+                    "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+                    "https://images.unsplash.com/photo-1542751110-97427bbecf20",
+                    "https://images.unsplash.com/photo-1581595219315-a187dd40c322",
+                    "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1"
+                ],
+                specs: [
+                    { name: "Brand", value: "Epson" },
+                    { name: "Resolution", value: "1920x1080" },
+                    { name: "Brightness", value: "3500 lumens" },
+                    { name: "Contrast", value: "15,000:1" },
+                    { name: "Lamp Life", value: "5,000 hours" },
+                    { name: "Inputs", value: "HDMI, USB, VGA" },
+                    { name: "Includes", value: "120\" screen" },
+                    { name: "Condition", value: "Like New" }
+                ]
+            }
+        };
+
+        // Function to change main image in gallery
+        function changeMainImage(src) {
+            document.getElementById('detail-main-image').src = src;
+        }
+
+        // Function to calculate rental total
+        function calculateRentalTotal() {
+            const startDate = new Date(document.getElementById('start-date').value);
+            const endDate = new Date(document.getElementById('end-date').value);
+
+            if (startDate && endDate && startDate < endDate) {
+                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                const pricePerDay = parseFloat(document.getElementById('detail-price').textContent.replace('$', ''));
+                const total = days * pricePerDay;
+                document.getElementById('rental-total').textContent = `₹${total.toFixed(2)}`;
+            } else {
+                document.getElementById('rental-total').textContent = '₹0';
+            }
+        }
+
+        // Function to open item detail modal
+        function openItemDetail(itemKey) {
+            const item = itemDetails[itemKey];
+            if (!item) return;
+
+            // Set main details
+            document.getElementById('detail-title').textContent = item.title;
+            document.getElementById('detail-rating').textContent = item.rating;
+            document.getElementById('detail-review-count').textContent = `(${item.reviewCount} reviews)`;
+            document.getElementById('detail-location').textContent = item.location;
+            document.getElementById('detail-price').textContent = `$${item.price}`;
+            document.getElementById('detail-description').textContent = item.description;
+
+            // Set main image
+            const mainImage = document.getElementById('detail-main-image');
+            mainImage.src = item.images[0];
+            mainImage.alt = item.title;
+
+            // Set thumbnail images
+            const thumbnails = document.querySelectorAll('#item-detail-modal .grid.grid-cols-4 img');
+            item.images.forEach((img, index) => {
+                if (thumbnails[index]) {
+                    thumbnails[index].src = img;
+                    thumbnails[index].alt = `${item.title} ${index + 1}`;
+                }
+            });
+
+            // Set specifications
+            const specsContainer = document.getElementById('detail-specs');
+            specsContainer.innerHTML = '';
+            item.specs.forEach(spec => {
+                const li = document.createElement('li');
+                li.className = 'col-span-1';
+                li.innerHTML = `<span class="font-medium">${spec.name}:</span> <span>${spec.value}</span>`;
+                specsContainer.appendChild(li);
+            });
+
+            // Set up date pickers
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+
+            document.getElementById('start-date').valueAsDate = today;
+            document.getElementById('end-date').valueAsDate = tomorrow;
+
+            // Calculate initial total
+            calculateRentalTotal();
+
+            // Open modal
+            openModal('item-detail-modal');
+        }
+
+        // Set up event listeners for date changes
+        document.getElementById('start-date').addEventListener('change', calculateRentalTotal);
+        document.getElementById('end-date').addEventListener('change', calculateRentalTotal);
+
+        // Set up rent now button
+        document.getElementById('rent-now-btn').addEventListener('click', function () {
+            // Check if user is logged in
+            const loggedInUser = sessionStorage.getItem('loggedInUser');
+            if (!loggedInUser) {
+                closeModal('item-detail-modal');
+                openModal('login-modal');
+                // Store the item details in sessionStorage to restore after login
+                const itemDetails = {
+                    title: document.getElementById('detail-title').textContent,
+                    price: document.getElementById('detail-price').textContent,
+                    startDate: document.getElementById('start-date').value,
+                    endDate: document.getElementById('end-date').value
+                };
+                sessionStorage.setItem('pendingRental', JSON.stringify(itemDetails));
+                return;
+            }
+
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+
+            if (new Date(startDate) >= new Date(endDate)) {
+                alert('End date must be after start date');
+                return;
+            }
+
+            const itemTitle = document.getElementById('detail-title').textContent;
+            const total = document.getElementById('rental-total').textContent;
+
+            alert(`Booking confirmed for ${itemTitle} from ${startDate} to ${endDate}. Total: ${total}`);
+            closeModal('item-detail-modal');
+        });
+
+        // Chatbot functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotWindow = document.getElementById('chatbot-window');
+            const chatbotClose = document.getElementById('chatbot-close');
+            const chatbotMessages = document.getElementById('chatbot-messages');
+            const chatbotInput = document.getElementById('chatbot-input');
+            const chatbotSend = document.getElementById('chatbot-send');
+
+            // Toggle chatbot window
+            chatbotToggle.addEventListener('click', function () {
+                chatbotWindow.style.display = chatbotWindow.style.display === 'flex' ? 'none' : 'flex';
+            });
+
+            // Close chatbot window
+            chatbotClose.addEventListener('click', function () {
+                chatbotWindow.style.display = 'none';
+            });
+
+            // Send message
+            function sendMessage() {
+                const message = chatbotInput.value.trim();
+                if (message) {
+                    // Add user message
+                    addMessage(message, 'user');
+                    chatbotInput.value = '';
+
+                    // Simulate typing indicator
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.className = 'message bot-message typing-indicator';
+                    typingIndicator.textContent = 'Typing...';
+                    chatbotMessages.appendChild(typingIndicator);
+                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+                    // Simulate bot response after delay
+                    setTimeout(() => {
+                        chatbotMessages.removeChild(typingIndicator);
+                        const response = getBotResponse(message);
+                        addMessage(response, 'bot');
+                    }, 1000 + Math.random() * 2000);
+                }
+            }
+
+            // Send message on button click or Enter key
+            chatbotSend.addEventListener('click', sendMessage);
+            chatbotInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // Add message to chat
+            function addMessage(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}-message`;
+                messageDiv.textContent = text;
+                chatbotMessages.appendChild(messageDiv);
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+
+            // Bot responses
+            function getBotResponse(userMessage) {
+                const lowerMessage = userMessage.toLowerCase();
+
+                // Greetings
+                if (lowerMessage.includes('hi') || lowerMessage.includes('hello') || lowerMessage.includes('hey')) {
+                    return "Hello there! How can I assist you with ShareCircle today?";
+                }
+
+                // Help
+                if (lowerMessage.includes('help') || lowerMessage.includes('support')) {
+                    return "I can help you with:\n- Finding items to rent\n- Listing your items\n- Rental process questions\n- Payment and safety info\nWhat specifically do you need help with?";
+                }
+
+                // Rental process
+                if (lowerMessage.includes('rent') || lowerMessage.includes('how to rent')) {
+                    return "To rent an item:\n1. Search for what you need\n2. Select the item and check availability\n3. Choose rental dates\n4. Complete payment\n5. Arrange pickup with the owner\nWould you like help finding something specific?";
+                }
+
+                // Listing items
+                if (lowerMessage.includes('list') || lowerMessage.includes('add item')) {
+                    return "To list an item:\n1. Click 'List Your Item' in the navigation\n2. Fill in details and upload photos\n3. Set your price and availability\n4. Publish your listing\nYou can earn money from items you're not using!";
+                }
+
+                // Safety
+                if (lowerMessage.includes('safe') || lowerMessage.includes('trust') || lowerMessage.includes('scam')) {
+                    return "ShareCircle has several safety features:\n- Verified user profiles\n- Secure payments\n- User reviews and ratings\n- Messaging within the platform\n- Insurance options for valuable items\nYour safety is our top priority!";
+                }
+
+                // Payments
+                if (lowerMessage.includes('pay') || lowerMessage.includes('price') || lowerMessage.includes('cost')) {
+                    return "Payments on ShareCircle:\n- All payments are processed securely\n- Owners set their own rental prices\n- You'll see the total cost before booking\n- Payment is released to the owner after successful rental\nWe accept all major credit cards and digital wallets.";
+                }
+                if (lowerMessage.includes('show') || lowerMessage.includes('show items') || lowerMessage.includes('categories')) {
+                    return "Items on ShareCircle:\n- All Items are listed in Explore items.\n"
+                }
+                // Default response
+                return "I'm here to help with ShareCircle! You can ask me about:\n- How to rent items\n- Listing your items\n- Payment questions\n- Safety information\nWhat would you like to know?";
+            }
+        });
+    </script>
+</body>
+
+</html>

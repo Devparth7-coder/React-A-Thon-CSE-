@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Your Item | ShareCircle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles to match your existing design */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #64748b;
+        }
+        
+        /* Custom checkbox */
+        .custom-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .custom-checkbox:checked {
+            background-color: #0ea5e9;
+            border-color: #0ea5e9;
+        }
+        .custom-checkbox:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+        .dark .custom-checkbox {
+            border-color: #475569;
+        }
+        
+        /* Image upload preview */
+        .image-preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        .image-preview {
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 120px;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .remove-image {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-recycle text-primary-600 dark:text-primary-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800 dark:text-white">ShareCircle</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                    <!-- Logged in state -->
+                    <div id="logged-in-view" class="flex items-center space-x-4">
+                        <a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 rounded-md text-sm font-medium">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">List Your Item for Rent</h1>
+                <p class="text-gray-600 dark:text-gray-300 mt-1">Fill out the form below to list your item on ShareCircle</p>
+            </div>
+            
+            <form id="item-form" class="p-6">
+                <!-- Basic Information Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-info-circle text-primary-600 dark:text-primary-400"></i>
+                        </span>
+                        Basic Information
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="item-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Item Title*</label>
+                            <input type="text" id="item-title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="e.g. Canon EOS R5 Camera" required>
+                        </div>
+                        
+                        <div>
+                            <label for="item-category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category*</label>
+                            <select id="item-category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <option value="">Select a category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Tools">Tools</option>
+                                <option value="Sports & Outdoors">Sports & Outdoors</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Books & Media">Books & Media</option>
+                                <option value="Home & Garden">Home & Garden</option>
+                                <option value="Vehicles">Vehicles</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="item-price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Daily Price ($)*</label>
+                            <input type="number" id="item-price" min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="e.g. 25.00" required>
+                        </div>
+                        
+                        <div>
+                            <label for="item-deposit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Security Deposit ($)</label>
+                            <input type="number" id="item-deposit" min="0" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="e.g. 100.00">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <label for="item-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description*</label>
+                        <textarea id="item-description" rows="4" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="Describe your item in detail (condition, features, etc.)" required></textarea>
+                    </div>
+                </div>
+                
+                <!-- Images Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-images text-primary-600 dark:text-primary-400"></i>
+                        </span>
+                        Photos
+                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">(At least 1 required)</span>
+                    </h2>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Upload Images*</label>
+                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md">
+                            <div class="space-y-1 text-center">
+                                <div class="flex text-sm text-gray-600 dark:text-gray-300">
+                                    <label for="file-upload" class="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 focus-within:outline-none">
+                                        <span>Upload files</span>
+                                        <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple accept="image/*">
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG up to 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="image-preview-container" class="image-preview-container mt-4 hidden">
+                        <!-- Image previews will be added here by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Location Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-map-marker-alt text-primary-600 dark:text-primary-400"></i>
+                        </span>
+                        Location
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="item-city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City*</label>
+                            <input type="text" id="item-city" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        
+                        <div>
+                            <label for="item-state" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State/Province*</label>
+                            <input type="text" id="item-state" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        
+                        <div>
+                            <label for="item-zip" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ZIP/Postal Code*</label>
+                            <input type="text" id="item-zip" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Availability Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-calendar-alt text-primary-600 dark:text-primary-400"></i>
+                        </span>
+                        Availability
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Availability Type*</label>
+                            <div class="mt-1 space-y-2">
+                                <div class="flex items-center">
+                                    <input id="availability-type-flexible" name="availability-type" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600" checked>
+                                    <label for="availability-type-flexible" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Flexible (contact me to arrange dates)</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="availability-type-specific" name="availability-type" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
+                                    <label for="availability-type-specific" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Specific dates (set below)</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="specific-dates-container" class="hidden">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Available Dates*</label>
+                            <div class="mt-1">
+                                <input type="text" id="item-available-dates" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="Select dates" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Rental Terms Section -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+                        <span class="w-8 h-8 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-file-contract text-primary-600 dark:text-primary-400"></i>
+                        </span>
+                        Rental Terms
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="item-min-rental" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Minimum Rental Period (days)*</label>
+                            <select id="item-min-rental" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" required>
+                                <option value="1">1 day</option>
+                                <option value="2">2 days</option>
+                                <option value="3">3 days</option>
+                                <option value="7" selected>7 days</option>
+                                <option value="14">14 days</option>
+                                <option value="30">30 days</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="item-delivery" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Delivery Options</label>
+                            <div class="mt-1 space-y-2">
+                                <div class="flex items-center">
+                                    <input id="delivery-pickup" name="delivery-option" type="checkbox" class="custom-checkbox" checked>
+                                    <label for="delivery-pickup" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Pickup only</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="delivery-dropoff" name="delivery-option" type="checkbox" class="custom-checkbox">
+                                    <label for="delivery-dropoff" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">I can drop off (+$10/day)</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="item-requirements" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Renter Requirements</label>
+                            <textarea id="item-requirements" rows="2" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white" placeholder="Any requirements for renters (e.g., must be 21+, ID verification, etc.)"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Section -->
+                <div class="pt-5 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-end">
+                        <button type="button" onclick="window.location.href='index.html'" class="bg-white dark:bg-gray-700 py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            Cancel
+                        </button>
+                        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                            List Item
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75 dark:bg-gray-900 dark:opacity-90"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Item Listed Successfully!</h3>
+                        <button onclick="closeModal('success-modal')" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mt-6 text-center">
+                        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900">
+                            <i class="fas fa-check text-green-600 dark:text-green-400"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-5">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Your item is now live!</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Your listing has been submitted and is now visible to potential renters in your area.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6">
+                        <button type="button" onclick="window.location.href='index.html'" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm">
+                            Back to Home
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- THEME TOGGLE ---
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+        
+        themeToggle.addEventListener('click', () => {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        });
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            applyTheme('dark');
+        } else {
+            applyTheme('light');
+        }
+        
+        // --- IMAGE UPLOAD HANDLING ---
+        const fileUpload = document.getElementById('file-upload');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        
+        fileUpload.addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                imagePreviewContainer.classList.remove('hidden');
+                imagePreviewContainer.innerHTML = '';
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (!file.type.match('image.*')) continue;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewDiv = document.createElement('div');
+                        previewDiv.className = 'image-preview';
+                        previewDiv.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview">
+                            <div class="remove-image" onclick="removeImage(${i})">
+                                <i class="fas fa-times text-xs"></i>
+                            </div>
+                        `;
+                        imagePreviewContainer.appendChild(previewDiv);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            } else {
+                imagePreviewContainer.classList.add('hidden');
+            }
+        });
+        
+        function removeImage(index) {
+            // Create a new DataTransfer object to manipulate files
+            const dt = new DataTransfer();
+            const input = document.getElementById('file-upload');
+            
+            // Add all files except the one to be removed
+            for (let i = 0; i < input.files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(input.files[i]);
+                }
+            }
+            
+            // Update the file input
+            input.files = dt.files;
+            
+            // Trigger change event to update preview
+            const event = new Event('change');
+            input.dispatchEvent(event);
+        }
+        
+        // --- AVAILABILITY TYPE TOGGLE ---
+        const availabilityTypeFlexible = document.getElementById('availability-type-flexible');
+        const availabilityTypeSpecific = document.getElementById('availability-type-specific');
+        const specificDatesContainer = document.getElementById('specific-dates-container');
+        
+        availabilityTypeFlexible.addEventListener('change', function() {
+            specificDatesContainer.classList.add('hidden');
+        });
+        
+        availabilityTypeSpecific.addEventListener('change', function() {
+            specificDatesContainer.classList.remove('hidden');
+        });
+        
+        // --- FORM SUBMISSION ---
+        const itemForm = document.getElementById('item-form');
+        
+        itemForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            const title = document.getElementById('item-title').value;
+            const category = document.getElementById('item-category').value;
+            const price = document.getElementById('item-price').value;
+            const description = document.getElementById('item-description').value;
+            const city = document.getElementById('item-city').value;
+            const state = document.getElementById('item-state').value;
+            const zip = document.getElementById('item-zip').value;
+            const files = document.getElementById('file-upload').files;
+            
+            if (!title || !category || !price || !description || !city || !state || !zip || files.length === 0) {
+                alert('Please fill in all required fields and upload at least one image.');
+                return;
+            }
+            
+            // In a real application, you would send the form data to your server here
+            console.log('Form submitted with data:', {
+                title,
+                category,
+                price,
+                description,
+                city,
+                state,
+                zip,
+                files: Array.from(files).map(f => f.name)
+            });
+            
+            // Show success modal
+            openModal('success-modal');
+            
+            // Reset form (optional)
+            // itemForm.reset();
+            // imagePreviewContainer.classList.add('hidden');
+        });
+        
+        // --- MODAL CONTROLS ---
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
