@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | ShareCircle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .team-card {
+            transition: all 0.3s ease;
+        }
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <!-- Navigation (same as your main page) -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-recycle text-primary-600 dark:text-primary-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-gray-800 dark:text-white">ShareCircle</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-4">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100 px-3 py-2 rounded-md text-sm font-medium">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Us Hero Section -->
+    <section class="bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Meet Our Team</h1>
+            <p class="text-xl max-w-3xl mx-auto">The passionate developers behind ShareCircle who are redefining peer-to-peer rentals through innovative technology and design.</p>
+        </div>
+    </section>
+
+    <!-- Our Story Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Our Story</h2>
+                <p class="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                    ShareCircle was born from a shared vision of creating a more sustainable economy where resources are utilized efficiently. 
+                    Our team came together with diverse skills but a common goal - to build a platform that makes sharing easy, safe, and rewarding for everyone.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Members Section -->
+    <section class="py-16 bg-gray-100 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">The Team</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Devansh - Frontend -->
+                <div class="team-card bg-white dark:bg-gray-700 rounded-xl p-6 shadow-md text-center">
+                    <div class="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-primary-500 dark:border-primary-400">
+                        <img src="" 
+                             alt="Devansh" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Devansh Kumar Yadav</h3>
+                    <p class="text-primary-600 dark:text-primary-400 font-medium mb-4">Frontend Developer</p>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        As our Frontend Developer, Devansh brings the ShareCircle platform to life with clean, responsive interfaces. 
+                        He specializes in creating intuitive user experiences with modern frameworks like React and Tailwind CSS.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dev Parth - UI/UX -->
+                <div class="team-card bg-white dark:bg-gray-700 rounded-xl p-6 shadow-md text-center">
+                    <div class="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-primary-500 dark:border-primary-400">
+                        <img src="Dev.jpg" 
+                             alt="Dev Parth" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Dev Parth</h3>
+                    <p class="text-primary-600 dark:text-primary-400 font-medium mb-4">UI/UX Designer</p>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Dev is our creative force, crafting beautiful and functional interfaces. With a keen eye for detail and user psychology, 
+                        he ensures every interaction with ShareCircle is seamless and enjoyable.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-dribbble text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-behance text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hariom - Backend -->
+                <div class="team-card bg-white dark:bg-gray-700 rounded-xl p-6 shadow-md text-center">
+                    <div class="w-40 h-40 mx-auto mb-6 rounded-full overflow-hidden border-4 border-primary-500 dark:border-primary-400">
+                        <img src="" 
+                             alt="Hariom" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Hariom</h3>
+                    <p class="text-primary-600 dark:text-primary-400 font-medium mb-4">Backend Developer</p>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Hariom is the architect behind ShareCircle's robust backend systems. He builds secure, scalable APIs and databases 
+                        that power our platform, ensuring reliability and performance at scale.
+                    </p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-stack-overflow text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400">
+                            <i class="fab fa-linkedin-in text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Values Section -->
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Our Values</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6 rounded-lg">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <i class="fas fa-users text-primary-600 dark:text-primary-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Community First</h3>
+                    <p class="text-gray-600 dark:text-gray-300">We believe in building trust and fostering connections between people through shared resources.</p>
+                </div>
+                <div class="text-center p-6 rounded-lg">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <i class="fas fa-leaf text-primary-600 dark:text-primary-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Sustainability</h3>
+                    <p class="text-gray-600 dark:text-gray-300">We're committed to reducing waste by maximizing the utility of every item in our community.</p>
+                </div>
+                <div class="text-center p-6 rounded-lg">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                        <i class="fas fa-lock text-primary-600 dark:text-primary-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Security</h3>
+                    <p class="text-gray-600 dark:text-gray-300">We prioritize the safety and security of our users in every aspect of our platform.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-primary-600 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-6">Join Our Community</h2>
+            <p class="text-xl mb-8 max-w-3xl mx-auto">Become part of the sharing economy movement and help us build a more sustainable future.</p>
+            <a href="index.html" class="inline-block bg-white text-primary-600 hover:bg-gray-100 px-8 py-3 rounded-lg font-bold text-lg">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Footer (same as your main page) -->
+    <footer class="bg-gray-800 text-gray-300 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">ShareCircle</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Careers</a></li>
+                        <li><a href="#" class="hover:text-white">Press</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Community</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">Safety</a></li>
+                        <li><a href="#" class="hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white">Trust & Verification</a></li>
+                        <li><a href="#" class="hover:text-white">Community Guidelines</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Hosting</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white">List Your Item</a></li>
+                        <li><a href="#" class="hover:text-white">Hosting Resources</a></li>
+                        <li><a href="#" class="hover:text-white">Insurance</a></li>
+                        <li><a href="#" class="hover:text-white">Host Community</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-lg mb-4">Connect</h3>
+                    <div class="flex space-x-4 mb-4">
+                        <a href="#" class="hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-sm">© 2025 ShareCircle. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-sm hover:text-white">Privacy Policy</a>
+                    <a href="#" class="text-sm hover:text-white">Terms of Service</a>
+                    <a href="#" class="text-sm hover:text-white">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // You can add any interactive functionality here if needed
+    </script>
+</body>
+</html>
